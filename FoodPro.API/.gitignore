@@ -1,0 +1,23 @@
+## Core build artifacts
+bin/
+obj/
+
+## Rider and Visual Studio cache/configurations
+.idea/
+.vs/
+*.user
+*.userosscache
+*.sln.docstates
+
+## User-specific files and secrets
+appsettings.Development.json
+usersecrets.json
+
+## Publish output
+publish/
+store/
+
+## Operating system files
+Thumbs.db
+ehthumbs.db
+.DS_Store

@@ -21,3 +21,5 @@ store/
 Thumbs.db
 ehthumbs.db
 .DS_Store
+
+Properties/launchSettings.json

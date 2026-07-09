@@ -4,7 +4,7 @@ using FoodPro.API.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace FoodPro.API.Controllers.FoodsController
+namespace FoodPro.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
@@ -73,6 +73,15 @@ namespace FoodPro.API.Controllers.FoodsController
                 return NotFound(new {message = "Category not found"});
             }
 
+            if (food.Name == request.Name &&
+                food.Description == request.Description &&
+                food.Price == request.Price &&
+                food.ImageUrl == request.ImageUrl &&
+                food.CategoryId == request.CategoryId)
+            {
+                return BadRequest(new { message = "No changes detected" });
+            }
+                
             food.Name = request.Name;
             food.Description = request.Description;
             food.Price = request.Price;

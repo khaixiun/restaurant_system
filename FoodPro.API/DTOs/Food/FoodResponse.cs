@@ -7,6 +7,7 @@ namespace FoodPro.API.DTOs.Food
         decimal Price,
         string? ImageUrl,
         int CategoryId,
+        string CategoryName,
         DateTime CreatedAt
     );
 }

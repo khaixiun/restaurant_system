@@ -14,21 +14,22 @@ namespace FoodPro.API.Controllers
         public async Task<ActionResult<IEnumerable<FoodResponse>>> GetFoods()
         {
             return await context.Foods
-                .Select(f => new FoodResponse(f.Id, f.Name, f.Description, f.Price, f.ImageUrl, f.CategoryId, f.CreatedAt))
+                .Include(f => f.Category)
+                .Select(f => new FoodResponse(f.Id, f.Name, f.Description, f.Price, f.ImageUrl, f.CategoryId, f.Category!.Name, f.CreatedAt))
                 .ToListAsync();
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<FoodResponse>> GetFood(int id)
         {
-            var food = await context.Foods.FindAsync(id);
+            var food = await context.Foods
+                .Include(f => f.Category)
+                .FirstOrDefaultAsync(f => f.Id == id);
 
-            if(food is null)
-            {
-                return NotFound(new {message = "Food not found"});
-            }
+            if (food is null)
+                return NotFound(new { message = "Food not found" });
 
-            return Ok(new FoodResponse(food.Id, food.Name, food.Description, food.Price, food.ImageUrl, food.CategoryId, food.CreatedAt));
+            return Ok(new FoodResponse(food.Id, food.Name, food.Description, food.Price, food.ImageUrl, food.CategoryId, food.Category!.Name, food.CreatedAt));
         }
 
         [HttpPost]
@@ -53,7 +54,7 @@ namespace FoodPro.API.Controllers
             context.Foods.Add(food);
             await context.SaveChangesAsync();
 
-            var response = new FoodResponse(food.Id, food.Name, food.Description, food.Price, food.ImageUrl, food.CategoryId, food.CreatedAt);
+            var response = new FoodResponse(food.Id, food.Name, food.Description, food.Price, food.ImageUrl, food.CategoryId, categoryExists.Name, food.CreatedAt);
             return CreatedAtAction(nameof(GetFood), new {id = food.Id}, response);
         }
 
@@ -72,15 +73,6 @@ namespace FoodPro.API.Controllers
             {
                 return NotFound(new {message = "Category not found"});
             }
-
-            if (food.Name == request.Name &&
-                food.Description == request.Description &&
-                food.Price == request.Price &&
-                food.ImageUrl == request.ImageUrl &&
-                food.CategoryId == request.CategoryId)
-            {
-                return BadRequest(new { message = "No changes detected" });
-            }
                 
             food.Name = request.Name;
             food.Description = request.Description;
@@ -90,7 +82,7 @@ namespace FoodPro.API.Controllers
 
             await context.SaveChangesAsync();
 
-            return Ok(new {id = food.Id, messsage = "Food updated successfully"});
+            return Ok(new {id = food.Id, message = "Food updated successfully"});
         }
 
         [HttpDelete("{id}")]

@@ -1,4 +1,4 @@
-import FoodCard from "./FoodCard";
+import FoodCard from "@/components/FoodCard";
 import { Food } from "@/app/types/food";
 
 interface MenuSectionProps {

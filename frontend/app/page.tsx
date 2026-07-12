@@ -1,24 +1,7 @@
-import MenuSection from "../components/MenuSection";
+import MenuSection from "@/components/MenuSection";
 import { Food } from "@/app/types/food";
 import Link from "next/link";
-
-async function getFoods(): Promise<Food[]> {
-  const res = await fetch("http://localhost:5276/api/foods", {
-    cache: "no-store",
-  });
-
-  if (!res.ok) return [];
-
-  return res.json();
-}
-
-function groupByCategory(foods: Food[]): Record<number, Food[]> {
-  return foods.reduce((acc, food) => {
-    if (!acc[food.categoryId]) acc[food.categoryId] = [];
-    acc[food.categoryId].push(food);
-    return acc;
-  }, {} as Record<number, Food[]>);
-}
+import { getFoods, groupByCategory } from "@/lib/foods";
 
 export default async function HomePage() {
   const foods = await getFoods();

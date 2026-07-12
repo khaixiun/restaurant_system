@@ -11,6 +11,7 @@ namespace FoodPro.API.Data
 
         public DbSet<Category> Categories { get; set; }
         public DbSet<Food> Foods { get; set; }
+        public DbSet<User> Users { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -24,6 +25,7 @@ namespace FoodPro.API.Data
 
             modelBuilder.Entity<Category>().HasQueryFilter(c => c.DeletedAt == null);
             modelBuilder.Entity<Food>().HasQueryFilter(f => f.DeletedAt == null);
+            modelBuilder.Entity<User>().HasQueryFilter(u => u.DeletedAt == null);
 
             foreach (var entity in modelBuilder.Model.GetEntityTypes())
             {

@@ -23,6 +23,10 @@ namespace FoodPro.API.Data
                 .HasForeignKey(f => f.CategoryId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            modelBuilder.Entity<User>()
+                .Property(u => u.Role)
+                .HasConversion<string>();
+
             modelBuilder.Entity<Category>().HasQueryFilter(c => c.DeletedAt == null);
             modelBuilder.Entity<Food>().HasQueryFilter(f => f.DeletedAt == null);
             modelBuilder.Entity<User>().HasQueryFilter(u => u.DeletedAt == null);

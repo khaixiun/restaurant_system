@@ -49,3 +49,5 @@ Thumbs.db
 
 # Cloudinary / Development Upload cache (if any get saved locally)
 *.log
+
+.env.local

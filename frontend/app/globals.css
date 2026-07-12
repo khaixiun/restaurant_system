@@ -1,0 +1,10 @@
+@import "tailwindcss";
+
+@theme {
+  --font-serif: var(--font-serif), serif;
+  --font-sans: var(--font-sans), sans-serif;
+
+  --color-brand-dark: #141413;
+  --color-brand-gold: #e69616;
+  --color-brand-accent: #FAFFA2;
+}

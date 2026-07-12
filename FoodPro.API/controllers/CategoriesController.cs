@@ -3,13 +3,16 @@ using FoodPro.API.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using FoodPro.API.DTOs.Category;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FoodPro.API.Controllers
 {
+    [Authorize(Roles = "Admin")]
     [ApiController]
     [Route("api/[controller]")]
     public class CategoriesController(AppDbContext context) : ControllerBase
     {
+        [AllowAnonymous]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CategoryResponse>>> GetCategories()
         {
@@ -18,6 +21,7 @@ namespace FoodPro.API.Controllers
                 .ToListAsync();
         }
 
+        [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<ActionResult<CategoryResponse>> GetCategory(int id)
         {

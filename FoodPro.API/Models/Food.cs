@@ -10,13 +10,13 @@ namespace FoodPro.API.Models
         public string Name { get; set; } = string.Empty;
 
         [MaxLength(500)]
-        public string? Description { get; set; } = string.Empty;
+        public string? Description { get; set; }
 
         [Required]
         [Column(TypeName = "decimal(18,2)")]
         public decimal Price { get; set; }
 
-        public string? ImageUrl { get; set; } = string.Empty;
+        public string? ImageUrl { get; set; }
 
         [Required]
         public int CategoryId { get; set; }

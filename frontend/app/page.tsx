@@ -2,6 +2,7 @@ import MenuSection from "@/components/MenuSection";
 import { Food } from "@/app/types/food";
 import Link from "next/link";
 import { getFoods, groupByCategory } from "@/lib/foods";
+import ErrorBanner from "@/components/ErrorBanner";
 
 export default async function HomePage() {
   const foods = await getFoods();
@@ -9,6 +10,7 @@ export default async function HomePage() {
 
   return (
     <main className="bg-brand-dark min-h-screen">
+      <ErrorBanner />
       <div className="max-w-6xl mx-auto px-6 md:px-12">
 
         <div className="pt-32 pb-16">

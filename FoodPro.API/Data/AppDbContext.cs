@@ -68,17 +68,21 @@ namespace FoodPro.API.Data
 
         private void ApplyAuditInfo()
         {
-            var timeZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Kuala_Lumpur");
-            var now = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, timeZone);
             var entries = ChangeTracker.Entries<BaseEntity>()
-                .Where(e => e.State == EntityState.Modified || e.State == EntityState.Deleted);
+                .Where(e => e.State == EntityState.Added ||
+                            e.State == EntityState.Modified || 
+                            e.State == EntityState.Deleted);
 
             foreach (var entry in entries)
             {
-                if (entry.State == EntityState.Modified)
+                if (entry.State == EntityState.Added)
                 {
+                    entry.Entity.CreatedAt = DateTime.UtcNow;
                     entry.Entity.UpdatedAt = DateTime.UtcNow;
                 }
+
+                if (entry.State == EntityState.Modified)
+                    entry.Entity.UpdatedAt = DateTime.UtcNow;
 
                 if (entry.State == EntityState.Deleted)
                 {

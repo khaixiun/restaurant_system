@@ -1,5 +1,5 @@
 import MenuTabs from "@/components/MenuTabs";
-import { Food } from "@/app/types/food";
+import { Food } from "@/types/food";
 import { getFoods, groupByCategory } from "@/lib/foods";
 
 export default async function MenuPage() {

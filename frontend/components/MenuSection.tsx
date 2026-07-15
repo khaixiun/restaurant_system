@@ -1,5 +1,5 @@
 import FoodCard from "@/components/FoodCard";
-import { Food } from "@/app/types/food";
+import { Food } from "@/types/food";
 
 interface MenuSectionProps {
   items: Food[];

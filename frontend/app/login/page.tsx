@@ -6,9 +6,11 @@ import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff } from "lucide-react";
 import { loginSchema, registerSchema, type LoginFormData, type RegisterFormData } from "@/schemas/auth";
-import { login, register } from "@/lib/auth";
+import { loginRequest, register } from "@/lib/auth";
+import { useAuth } from "@/context/AuthContext";
 
 export default function AuthPage() {
+  const { login } = useAuth();
   const router = useRouter();
   const [isLoginView, setIsLoginView] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
@@ -27,8 +29,13 @@ export default function AuthPage() {
   const onLoginSubmit = async (data: LoginFormData) => {
     try {
       setServerError(null);
-      await login(data);
-      router.replace("/");
+      const response = await loginRequest(data);
+      login(response.token, {
+        id: response.id,
+        name: response.name,
+        role: response.role,
+      });
+      window.location.href = "/";
     } catch (error: any) {
       setServerError(error.response?.data?.message || "Invalid email or password.");
     }

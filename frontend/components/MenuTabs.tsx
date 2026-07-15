@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Food } from "@/app/types/food";
+import { Food } from "@/types/food";
 
 interface MenuTabsProps {
   grouped: Record<number, Food[]>;

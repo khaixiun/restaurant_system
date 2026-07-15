@@ -2,34 +2,16 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import Cookies from "js-cookie";
-
-interface User {
-    id: number;
-    name: string;
-    role: string;
-}
+import { useAuth } from "@/context/AuthContext";
 
 export default function Navbar() {
     const [isScrolled, setIsScrolled] = useState(false);
-    const [user, setUser] = useState<User | null>(null);
+    const { user, logout } = useAuth();
 
     useEffect(() => {
         const handleScroll = () => setIsScrolled(window.scrollY > 50);
         window.addEventListener("scroll", handleScroll);
         return () => window.removeEventListener("scroll", handleScroll);
-    }, []);
-
-    useEffect(() => {
-        const userCookie = Cookies.get("user");
-        if (userCookie) {
-            try {
-            const decoded = decodeURIComponent(userCookie);
-            setUser(JSON.parse(decoded));
-            } catch {
-            console.error("Failed to parse user cookie");
-            }
-        }
     }, []);
 
     return (
@@ -70,10 +52,8 @@ export default function Navbar() {
                             </span>
                             <button
                                 onClick={() => {
-                                Cookies.remove("token");
-                                Cookies.remove("user");
-                                setUser(null);
-                                window.location.href = "/";
+                                    logout();
+                                    window.location.href = "/";
                                 }}
                                 className="bg-brand-gold/80 text-brand-dark font-medium tracking-widest text-xs px-6 py-3 hover:bg-brand-gold transition-colors duration-200"
                             >

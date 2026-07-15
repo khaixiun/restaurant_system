@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { Playfair_Display, Geist } from "next/font/google";
 import "@/app/globals.css";
 import Navbar from "@/components/Navbar";
+import { AuthProvider } from "@/context/AuthContext";
 
-// Setup the Luxury Serif Font
 const playfair = Playfair_Display({
   subsets: ["latin"],
   variable: "--font-serif",
@@ -27,10 +27,12 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${playfair.variable} ${geist.variable}`}>
       <body className="bg-brand-dark text-white antialiased min-h-screen font-sans">
-        <Navbar />
-        <main className="pt-24">
-          {children}
-        </main>
+        <AuthProvider>
+          <Navbar />
+          <main className="pt-24">
+            {children}
+          </main>
+        </AuthProvider>
       </body>
     </html>
   );

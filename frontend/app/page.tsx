@@ -1,5 +1,5 @@
 import MenuSection from "@/components/MenuSection";
-import { Food } from "@/app/types/food";
+import { Food } from "@/types/food";
 import Link from "next/link";
 import { getFoods, groupByCategory } from "@/lib/foods";
 import ErrorBanner from "@/components/ErrorBanner";

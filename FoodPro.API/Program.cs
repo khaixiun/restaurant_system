@@ -43,9 +43,12 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowNextJs", policy =>
     {
-        policy.WithOrigins("http://localhost:3000")
-              .AllowAnyHeader()
-              .AllowAnyMethod();
+        policy.WithOrigins(
+            "http://localhost:3000",
+            "https://restaurant-system-ql0654y50-khai-dev1.vercel.app/"
+        )
+        .AllowAnyHeader()
+        .AllowAnyMethod();
     });
 });
 
@@ -95,7 +98,6 @@ using(var scope = app.Services.CreateScope())
             Thread.Sleep(5000);
         }
     }
-
 }
 
 app.UseSwagger();

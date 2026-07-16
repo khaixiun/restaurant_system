@@ -18,12 +18,12 @@ export function groupByCategory(foods: Food[]): Record<number, Food[]> {
   }, {} as Record<number, Food[]>);
 }
 
-export async function createFood(data: FoodPayload){
-  await api.post("/foods", {data});
+export async function createFood(data: FoodPayload) {
+  await api.post("/foods", data);
 }
 
 export async function updateFood(id: number, data: FoodPayload) {
-  await api.put(`/foods/${id}`, {data});
+  await api.put(`/foods/${id}`, data);
 }
 
 export async function deleteFood(id: number){

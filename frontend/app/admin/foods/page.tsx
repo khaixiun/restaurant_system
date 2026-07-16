@@ -37,7 +37,8 @@ export default function FoodsPage() {
             getFoods(),
             getCategories(),
         ]);
-        setFoods(foodsData);
+        const sortedFoods = [...foodsData].sort((a, b) => a.id - b.id);
+        setFoods(sortedFoods);
         setCategories(categoriesData);
         setLoading(false);
     };

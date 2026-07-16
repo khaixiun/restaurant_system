@@ -12,6 +12,10 @@ export default function MenuTabs({ grouped }: MenuTabsProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const activeItems = categories[activeIndex];
 
+  if (categories.length === 0) {
+    return <p className="font-sans text-white/30 text-sm">No menu items available.</p>;
+  }
+
   return (
     <div>
       <div className="flex flex-wrap gap-0 border-b border-white/10 mb-12">

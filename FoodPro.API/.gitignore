@@ -24,3 +24,5 @@ ehthumbs.db
 
 Properties/launchSettings.json
 appsettings
+
+.env

@@ -1,8 +1,20 @@
 import MenuSection from "@/components/MenuSection";
 import { Food } from "@/types/food";
 import Link from "next/link";
-import { getFoods, groupByCategory } from "@/lib/foods";
+import { groupByCategory } from "@/lib/foods";
 import ErrorBanner from "@/components/ErrorBanner";
+
+async function getFoods(): Promise<Food[]> {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/foods`, {
+      cache: "no-store",
+    });
+    if (!res.ok) return [];
+    return res.json();
+  } catch {
+    return [];
+  }
+}
 
 export default async function HomePage() {
   const foods = await getFoods();

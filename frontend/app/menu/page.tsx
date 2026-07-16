@@ -1,6 +1,18 @@
 import MenuTabs from "@/components/MenuTabs";
 import { Food } from "@/types/food";
-import { getFoods, groupByCategory } from "@/lib/foods";
+import { groupByCategory } from "@/lib/foods";
+
+async function getFoods(): Promise<Food[]> {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/foods`, {
+      cache: "no-store",
+    });
+    if (!res.ok) return [];
+    return res.json();
+  } catch {
+    return [];
+  }
+}
 
 export default async function MenuPage() {
   const foods = await getFoods();

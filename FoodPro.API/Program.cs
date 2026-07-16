@@ -45,7 +45,7 @@ builder.Services.AddCors(options =>
     {
         policy.WithOrigins(
             "http://localhost:3000",
-            "restaurant-system-flame-xi.vercel.app"
+            "https://restaurant-system-flame-xi.vercel.app"
         )
         .AllowAnyHeader()
         .AllowAnyMethod();

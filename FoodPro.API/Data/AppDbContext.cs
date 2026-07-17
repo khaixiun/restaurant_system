@@ -12,24 +12,59 @@ namespace FoodPro.API.Data
         public DbSet<Category> Categories { get; set; }
         public DbSet<Food> Foods { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<Table> Tables { get; set; }
+        public DbSet<TimeSlot> TimeSlots { get; set; }
+        public DbSet<Reservation> Reservations { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
+            //Db relationship
             modelBuilder.Entity<Food>()
                 .HasOne(f => f.Category)
                 .WithMany(c => c.Foods)
                 .HasForeignKey(f => f.CategoryId)
                 .OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<Reservation>()
+                .HasOne(r => r.Table)
+                .WithMany(t => t.Reservations)
+                .HasForeignKey(r => r.TableId)
+                .OnDelete(DeleteBehavior.Restrict);
 
+            modelBuilder.Entity<Reservation>()
+                .HasOne(r => r.TimeSlot)
+                .WithMany(ts => ts.Reservations)
+                .HasForeignKey(r => r.TimeSlotId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            //Unique constraint 
+            modelBuilder.Entity<Reservation>()
+                .HasIndex(r => new { r.TableId, r.Date, r.TimeSlotId })
+                .IsUnique()
+                .HasFilter("deleted_at IS NULL");
+
+            //Enum conversion
             modelBuilder.Entity<User>()
                 .Property(u => u.Role)
+                .HasConversion<string>();
+
+            modelBuilder.Entity<Reservation>()
+                .Property(r => r.Status)
+                .HasConversion<string>();
+
+            modelBuilder.Entity<Table>()
+                .Property(t => t.Position)
                 .HasConversion<string>();
 
             modelBuilder.Entity<Category>().HasQueryFilter(c => c.DeletedAt == null);
             modelBuilder.Entity<Food>().HasQueryFilter(f => f.DeletedAt == null);
             modelBuilder.Entity<User>().HasQueryFilter(u => u.DeletedAt == null);
+            modelBuilder.Entity<Table>().HasQueryFilter(t => t.DeletedAt == null);
+            modelBuilder.Entity<TimeSlot>().HasQueryFilter(ts => ts.DeletedAt == null);
+            modelBuilder.Entity<Reservation>().HasQueryFilter(r => r.DeletedAt == null);
 
             foreach (var entity in modelBuilder.Model.GetEntityTypes())
             {

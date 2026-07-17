@@ -1,47 +1,105 @@
-# FoodPro - Premium Restaurant Management System
+FoodPro — Premium Restaurant Management System
 
-A full-stack restaurant system featuring a high-class, minimalist public food menu and a complete administrative control panel.
+A full-stack restaurant management system featuring a high-class, minimalist public food menu and a complete administrative control panel.
 
-## 🏗️ Project Architecture
+🔗 Live Demo: https://restaurant-system-git-main-khai-dev1.vercel.app
 
-This repository contains both the frontend and backend applications:
 
-* **/FoodPro.API**: The backend server built with .NET 10 Web API, Entity Framework Core, and MySQL. It manages food data, categories, and secure media uploads via Cloudinary.
-* **/frontend**: The frontend application built with Next.js 15+ (App Router), TypeScript, and Tailwind CSS.
+⚠️ The backend is hosted on Render's free tier — the first request may take 30–60 seconds to wake up the server. Please be patient on initial load.
 
----
 
-## 🚀 Getting Started
 
-### 1. Backend Setup (.NET 10)
-1. Navigate to the backend directory:
-   ```bash
-   cd FoodPro.API
-Configure your database connection string and Cloudinary keys in appsettings.Development.json.
+
+Project Architecture
+
+This is a monorepo containing both the frontend and backend applications:
+
+restaurant_system/
+├── FoodPro.API/          # .NET 10 Web API backend
+│   ├── docker-compose.yml
+│   └── ...
+└── frontend/             # Next.js 15 frontend
+    └── ...
+
+Getting Started
+
+Prerequisites
+
+.NET 10 SDK
+Node.js 18+
+Docker & Docker Compose
+A Cloudinary account
+A Neon PostgreSQL database (or any PostgreSQL instance)
+
+1. Backend Setup (.NET 10)
+
+The backend and database are managed together via Docker Compose.
+
+Navigate to the backend directory:
+
+bash   cd FoodPro.API
+
+Create your appsettings.Development.json and configure your secrets:
+
+json   {
+     "ConnectionStrings": {
+       "DefaultConnection": "your_postgresql_connection_string"
+     },
+     "Cloudinary": {
+       "CloudName": "your_cloud_name",
+       "ApiKey": "your_api_key",
+       "ApiSecret": "your_api_secret"
+     },
+     "Jwt": {
+       "Key": "your_jwt_secret_key",
+       "Issuer": "your_issuer",
+       "Audience": "your_audience"
+     }
+   }
+
+Start the backend and database with Docker Compose:
+
+bash   docker compose up --build
 
 Apply database migrations:
 
-Bash
-dotnet ef database update
-Start the API server:
+bash   dotnet ef database update
 
-Bash
-dotnet run
-The API will be available at https://localhost:7123 or http://localhost:5123.
+The API will be available at http://localhost:8080.
+
 
 2. Frontend Setup (Next.js)
+
+The frontend runs directly with Node.js — no Docker needed.
+
 Navigate to the frontend directory:
 
-Bash
-cd frontend
-Install the dependencies:
+bash   cd frontend
 
-Bash
-npm install
-Create a .env.local file based on .env.example and add your local API URL.
+Install dependencies:
+
+bash   npm install
+
+Create a .env.local file and configure your environment variables:
+
+env   NEXT_PUBLIC_API_URL=http://localhost:8080
 
 Run the development server:
 
-Bash
-npm run dev
-Open http://localhost:3000 in your browser to view the application.
+bash   npm run dev
+
+Open http://localhost:3000 in your browser.
+
+
+Features
+
+Public-facing food menu with category filtering
+Admin dashboard for full CRUD management of menu items and categories
+JWT authentication with role-based access control
+Cloudinary image uploads for food items
+Soft deletes across all entities
+CI/CD pipeline via GitHub Actions — builds and tests before deploying to Render and Vercel via webhooks
+
+
+Deployment
+Automatic deploys are disabled on both Render and Vercel. All deployments are triggered exclusively by the GitHub Actions CI/CD pipeline after a successful build.

@@ -9,8 +9,35 @@ import { useForm } from 'react-hook-form';
 import { getCategories } from "@/lib/category";
 import { getFoods, createFood, updateFood, deleteFood } from "@/lib/foods";
 import axios from 'axios';
+import DataTable, { Column } from '@/components/admin/DataTable';
+import AdminModal from '@/components/admin/AdminModal';
 
-const foodHeaders = ["ID", "Image", "Name", "Price", "Category", "Actions"];
+const columns: Column<Food>[] = [
+    { header: "ID", accessor: "id", width: "3rem" },
+    {
+        header: "Image",
+        width: "4rem",
+        render: (food) =>
+            food.imageUrl ? (
+                <img src={food.imageUrl} alt={food.name} className="w-12 h-12 object-cover" />
+            ) : (
+                <div className="w-12 h-12 bg-white/5 flex items-center justify-center">
+                    <span className="text-white/20 text-xs">None</span>
+                </div>
+            ),
+    },
+    { header: "Name", accessor: "name" },
+    {
+        header: "Price",
+        width: "6rem",
+        render: (food) => <span className="text-brand-gold">${food.price.toFixed(2)}</span>,
+    },
+    {
+        header: "Category",
+        width: "9rem",
+        render: (food) => <span className="text-white/50">{food.categoryName}</span>,
+    },
+];
 
 export default function FoodsPage() {
     const [foods, setFoods] = useState<Food[]>([]);
@@ -67,9 +94,9 @@ export default function FoodsPage() {
         setIsModalOpen(true);
     };
 
-    const handleDelete = async (id: number) => {
+    const handleDelete = async (food: Food) => {
         if (!window.confirm("Are you sure you want to delete this food?")) return;
-        await deleteFood(id);
+        await deleteFood(food.id);
         await fetchData();
     };
 
@@ -118,166 +145,113 @@ export default function FoodsPage() {
                 </button>
             </div>
 
-            {loading ? (
-                <p className="font-sans text-white/30 text-sm">Loading...</p>
-            ) : foods.length === 0 ? (
-                <p className="font-sans text-white/30 text-sm">No foods found.</p>
-            ) : (
-                <table className="w-full">
-                    <thead>
-                        <tr className="border-b border-white/10">
-                            {foodHeaders.map((header) => (
-                                <th key={header} className="text-left font-sans text-xs tracking-widest uppercase text-white/40 pb-4">
-                                    {header}
-                                </th>
-                            ))}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {foods.map((food) => (
-                            <tr key={food.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
-                                <td className="py-4 font-sans text-white/40 text-sm w-12">{food.id}</td>
-                                <td className="py-4 w-16">
-                                    {food.imageUrl ? (
-                                        <img src={food.imageUrl} alt={food.name} className="w-12 h-12 object-cover" />
-                                    ) : (
-                                        <div className="w-12 h-12 bg-white/5 flex items-center justify-center">
-                                            <span className="text-white/20 text-xs">None</span>
-                                        </div>
-                                    )}
-                                </td>
-                                <td className="py-4 font-sans text-white text-sm">{food.name}</td>
-                                <td className="py-4 font-sans text-brand-gold text-sm w-24">${food.price.toFixed(2)}</td>
-                                <td className="py-4 font-sans text-white/50 text-sm w-36">{food.categoryName}</td>
-                                <td className="py-4 w-32">
-                                    <div className="flex gap-3">
-                                        <button
-                                            onClick={() => handleEdit(food)}
-                                            className="font-sans text-xs text-brand-gold hover:text-white border border-brand-gold/30 hover:border-white/30 px-3 py-1.5 transition-colors"
-                                        >
-                                            Edit
-                                        </button>
-                                        <button
-                                            onClick={() => handleDelete(food.id)}
-                                            className="font-sans text-xs text-red-400 hover:text-red-300 border border-red-400/30 hover:border-red-300/30 px-3 py-1.5 transition-colors"
-                                        >
-                                            Delete
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            )}
+            <DataTable
+                data={foods}
+                columns={columns}
+                loading={loading}
+                emptyMessage="No foods found."
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+            />
 
-            {isModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center">
-                    <div
-                        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-                        onClick={() => setIsModalOpen(false)}
-                    />
-
-                    <div className="relative z-10 w-full max-w-lg bg-[#2a2a28] border border-white/10 p-8 max-h-[90vh] overflow-y-auto">
-                        <h2 className="font-serif text-white text-2xl mb-6">
-                            {editingFood ? "Edit Food" : "Add Food"}
-                        </h2>
-
-                        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-                            <div>
-                                <label className="block font-sans text-xs tracking-widest uppercase text-white/50 mb-2">
-                                    Name
-                                </label>
-                                <input
-                                    {...register("name")}
-                                    placeholder="e.g. Wagyu Tenderloin"
-                                    className="w-full bg-transparent border border-white/10 px-4 py-3 text-sm text-white placeholder-white/20 outline-none focus:border-brand-gold transition-colors"
-                                />
-                                {errors.name && <p className="mt-1.5 text-xs text-red-400">{errors.name.message}</p>}
-                            </div>
-
-                            <div>
-                                <label className="block font-sans text-xs tracking-widest uppercase text-white/50 mb-2">
-                                    Description <span className="text-white/20 normal-case tracking-normal">(optional)</span>
-                                </label>
-                                <textarea
-                                    {...register("description")}
-                                    placeholder="Describe the dish..."
-                                    rows={3}
-                                    className="w-full bg-transparent border border-white/10 px-4 py-3 text-sm text-white placeholder-white/20 outline-none focus:border-brand-gold transition-colors resize-none"
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block font-sans text-xs tracking-widest uppercase text-white/50 mb-2">
-                                    Price
-                                </label>
-                                <input
-                                    {...register("price", { valueAsNumber: true })}
-                                    type="number"
-                                    step="0.01"
-                                    placeholder="0.00"
-                                    className="w-full bg-transparent border border-white/10 px-4 py-3 text-sm text-white placeholder-white/20 outline-none focus:border-brand-gold transition-colors"
-                                />
-                                {errors.price && <p className="mt-1.5 text-xs text-red-400">{errors.price.message}</p>}
-                            </div>
-
-                            <div>
-                                <label className="block font-sans text-xs tracking-widest uppercase text-white/50 mb-2">
-                                    Category
-                                </label>
-                                <select
-                                    {...register("categoryId", { valueAsNumber: true })}
-                                    className="w-full bg-[#2a2a28] border border-white/10 px-4 py-3 text-sm text-white outline-none focus:border-brand-gold transition-colors"
-                                >
-                                    <option value={0} disabled>Select a category</option>
-                                    {categories.map((category) => (
-                                        <option key={category.id} value={category.id}>
-                                            {category.name}
-                                        </option>
-                                    ))}
-                                </select>
-                                {errors.categoryId && <p className="mt-1.5 text-xs text-red-400">{errors.categoryId.message}</p>}
-                            </div>
-
-                            <div>
-                                <label className="block font-sans text-xs tracking-widest uppercase text-white/50 mb-2">
-                                    Image <span className="text-white/20 normal-case tracking-normal">(optional)</span>
-                                </label>
-
-                                {previewUrl && (
-                                    <img src={previewUrl} alt="preview" className="w-full h-40 object-cover mb-3" />
-                                )}
-
-                                <input
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={handleImageUpload}
-                                    className="w-full text-sm text-white/40 file:mr-4 file:py-2 file:px-4 file:border-0 file:bg-white/10 file:text-white/60 file:text-xs file:cursor-pointer hover:file:bg-white/20 transition-colors"
-                                />
-                                {uploading && <p className="mt-1.5 text-xs text-brand-gold">Uploading...</p>}
-                            </div>
-
-                            <div className="flex gap-3 justify-end pt-2">
-                                <button
-                                    type="button"
-                                    onClick={() => setIsModalOpen(false)}
-                                    className="font-sans text-xs tracking-[0.2em] uppercase px-6 py-3 border border-white/10 text-white/50 hover:text-white hover:border-white/30 transition-colors"
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    type="submit"
-                                    disabled={isSubmitting || uploading}
-                                    className="font-sans text-xs tracking-[0.2em] uppercase px-6 py-3 bg-brand-gold text-[#1E1E1D] hover:bg-brand-accent transition-colors disabled:opacity-50"
-                                >
-                                    {isSubmitting ? "Saving..." : editingFood ? "Update" : "Save"}
-                                </button>
-                            </div>
-                        </form>
+            <AdminModal
+                isOpen={isModalOpen}
+                title={editingFood ? "Edit Food" : "Add Food"}
+                onClose={() => setIsModalOpen(false)}
+                hideFooter
+                maxWidth="max-w-lg"
+            >
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+                    <div>
+                        <label className="block font-sans text-xs tracking-widest uppercase text-white/50 mb-2">
+                            Name
+                        </label>
+                        <input
+                            {...register("name")}
+                            placeholder="e.g. Wagyu Tenderloin"
+                            className="w-full bg-transparent border border-white/10 px-4 py-3 text-sm text-white placeholder-white/20 outline-none focus:border-brand-gold transition-colors"
+                        />
+                        {errors.name && <p className="mt-1.5 text-xs text-red-400">{errors.name.message}</p>}
                     </div>
-                </div>
-            )}
+
+                    <div>
+                        <label className="block font-sans text-xs tracking-widest uppercase text-white/50 mb-2">
+                            Description <span className="text-white/20 normal-case tracking-normal">(optional)</span>
+                        </label>
+                        <textarea
+                            {...register("description")}
+                            placeholder="Describe the dish..."
+                            rows={3}
+                            className="w-full bg-transparent border border-white/10 px-4 py-3 text-sm text-white placeholder-white/20 outline-none focus:border-brand-gold transition-colors resize-none"
+                        />
+                    </div>
+
+                    <div>
+                        <label className="block font-sans text-xs tracking-widest uppercase text-white/50 mb-2">
+                            Price
+                        </label>
+                        <input
+                            {...register("price", { valueAsNumber: true })}
+                            type="number"
+                            step="0.01"
+                            placeholder="0.00"
+                            className="w-full bg-transparent border border-white/10 px-4 py-3 text-sm text-white placeholder-white/20 outline-none focus:border-brand-gold transition-colors"
+                        />
+                        {errors.price && <p className="mt-1.5 text-xs text-red-400">{errors.price.message}</p>}
+                    </div>
+
+                    <div>
+                        <label className="block font-sans text-xs tracking-widest uppercase text-white/50 mb-2">
+                            Category
+                        </label>
+                        <select
+                            {...register("categoryId", { valueAsNumber: true })}
+                            className="w-full bg-[#2a2a28] border border-white/10 px-4 py-3 text-sm text-white outline-none focus:border-brand-gold transition-colors"
+                        >
+                            <option value={0} disabled>Select a category</option>
+                            {categories.map((category) => (
+                                <option key={category.id} value={category.id}>
+                                    {category.name}
+                                </option>
+                            ))}
+                        </select>
+                        {errors.categoryId && <p className="mt-1.5 text-xs text-red-400">{errors.categoryId.message}</p>}
+                    </div>
+
+                    <div>
+                        <label className="block font-sans text-xs tracking-widest uppercase text-white/50 mb-2">
+                            Image <span className="text-white/20 normal-case tracking-normal">(optional)</span>
+                        </label>
+                        {previewUrl && (
+                            <img src={previewUrl} alt="preview" className="w-full h-40 object-cover mb-3" />
+                        )}
+                        <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleImageUpload}
+                            className="w-full text-sm text-white/40 file:mr-4 file:py-2 file:px-4 file:border-0 file:bg-white/10 file:text-white/60 file:text-xs file:cursor-pointer hover:file:bg-white/20 transition-colors"
+                        />
+                        {uploading && <p className="mt-1.5 text-xs text-brand-gold">Uploading...</p>}
+                    </div>
+
+                    <div className="flex gap-3 justify-end pt-2">
+                        <button
+                            type="button"
+                            onClick={() => setIsModalOpen(false)}
+                            className="font-sans text-xs tracking-[0.2em] uppercase px-6 py-3 border border-white/10 text-white/50 hover:text-white hover:border-white/30 transition-colors"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            type="submit"
+                            disabled={isSubmitting || uploading}
+                            className="font-sans text-xs tracking-[0.2em] uppercase px-6 py-3 bg-brand-gold text-[#1E1E1D] hover:bg-brand-accent transition-colors disabled:opacity-50"
+                        >
+                            {isSubmitting ? "Saving..." : editingFood ? "Update" : "Save"}
+                        </button>
+                    </div>
+                </form>
+            </AdminModal>
         </div>
     );
 }

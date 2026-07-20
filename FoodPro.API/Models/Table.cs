@@ -25,6 +25,8 @@ namespace FoodPro.API.Models
         [Required]
         public bool IsReservable { get; set;}
 
+        public string? ImageUrl { get; set; }
+
         public ICollection<Reservation> Reservations { get; set; } = [];
 
     }

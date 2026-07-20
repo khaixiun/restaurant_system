@@ -105,6 +105,6 @@ app.UseCors("AllowNextJs");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
-app.MapGet("/health", () => Results.Ok(new { status = "healthy" }));
+app.MapMethods("/health", ["GET", "HEAD"], () => Results.Ok(new { status = "healthy" }));
 
 app.Run();

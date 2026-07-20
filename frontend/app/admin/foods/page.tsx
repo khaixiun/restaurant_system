@@ -11,12 +11,13 @@ import { getFoods, createFood, updateFood, deleteFood } from "@/lib/foods";
 import axios from 'axios';
 import DataTable, { Column } from '@/components/admin/DataTable';
 import AdminModal from '@/components/admin/AdminModal';
+import ConfirmDialog from '@/components/admin/ConfirmDialog';
 
 const columns: Column<Food>[] = [
     { header: "ID", accessor: "id", width: "3rem" },
     {
         header: "Image",
-        width: "4rem",
+        width: "5rem",
         render: (food) =>
             food.imageUrl ? (
                 <img src={food.imageUrl} alt={food.name} className="w-12 h-12 object-cover" />
@@ -47,6 +48,8 @@ export default function FoodsPage() {
     const [editingFood, setEditingFood] = useState<Food | null>(null);
     const [uploading, setUploading] = useState(false);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+    const [confirmOpen, setConfirmOpen] = useState(false);
+    const [pendingDelete, setPendingDelete] = useState<Food | null>(null);
 
     const { register, handleSubmit, reset, setValue, formState: { errors, isSubmitting } } = useForm<FoodFormInput, any, FoodFormOutput>({
         resolver: zodResolver(foodSchema),
@@ -94,10 +97,17 @@ export default function FoodsPage() {
         setIsModalOpen(true);
     };
 
-    const handleDelete = async (food: Food) => {
-        if (!window.confirm("Are you sure you want to delete this food?")) return;
-        await deleteFood(food.id);
+    const handleDelete = (food: Food) => {
+        setPendingDelete(food);
+        setConfirmOpen(true);
+    };
+
+    const handleConfirmDelete = async () => {
+        if (!pendingDelete) return;
+        await deleteFood(pendingDelete.id);
         await fetchData();
+        setConfirmOpen(false);
+        setPendingDelete(null);
     };
 
     const onSubmit = async (data: FoodFormOutput) => {
@@ -252,6 +262,12 @@ export default function FoodsPage() {
                     </div>
                 </form>
             </AdminModal>
+            <ConfirmDialog
+                isOpen={confirmOpen}
+                message={`"${pendingDelete?.name}" will be permanently deleted.`}
+                onConfirm={handleConfirmDelete}
+                onCancel={() => setConfirmOpen(false)}
+            />
         </div>
     );
 }

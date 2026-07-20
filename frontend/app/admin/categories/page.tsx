@@ -5,10 +5,11 @@ import { Category } from "@/types/category";
 import { getCategories, createCategory, updateCategory, deleteCategory } from "@/lib/category";
 import DataTable, { Column } from "@/components/admin/DataTable";
 import AdminModal from "@/components/admin/AdminModal";
+import ConfirmDialog from "@/components/admin/ConfirmDialog";
 
 const columns: Column<Category>[] = [
-    { header: "ID", accessor: "id", width: "4rem" },
-    { header: "Name", accessor: "name" },
+    { header: "ID", accessor: "id", width: "3rem" },
+    { header: "Name", accessor: "name"},
     {
         header: "Created At",
         render: (row) => new Date(row.createdAt).toLocaleDateString(),
@@ -22,6 +23,8 @@ export default function CategoriesPage() {
     const [editingCategory, setEditingCategory] = useState<Category | null>(null);
     const [categoryName, setCategoryName] = useState("");
     const [nameError, setNameError] = useState<string | null>(null);
+    const [confirmOpen, setConfirmOpen] = useState(false);
+    const [pendingDelete, setPendingDelete] = useState<Category | null>(null);
 
     const fetchCategories = async () => {
         const data = await getCategories();
@@ -68,10 +71,17 @@ export default function CategoriesPage() {
         setIsModalOpen(false);
     };
 
-    const handleDelete = async (category: Category) => {
-        if (!window.confirm("Are you sure you want to delete this category?")) return;
-        await deleteCategory(category.id);
+    const handleDelete = (category: Category) => {
+        setPendingDelete(category);
+        setConfirmOpen(true);
+    };
+
+    const handleConfirmDelete = async () => {
+        if (!pendingDelete) return;
+        await deleteCategory(pendingDelete.id);
         await fetchCategories();
+        setConfirmOpen(false);
+        setPendingDelete(null);
     };
 
     return (
@@ -122,6 +132,12 @@ export default function CategoriesPage() {
                     )}
                 </div>
             </AdminModal>
+            <ConfirmDialog
+                isOpen={confirmOpen}
+                message={`"${pendingDelete?.name}" will be permanently deleted.`}
+                onConfirm={handleConfirmDelete}
+                onCancel={() => setConfirmOpen(false)}
+            />
         </div>
     );
 }

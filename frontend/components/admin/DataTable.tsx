@@ -74,7 +74,7 @@ export default function DataTable<T extends { id: number }>({
                                     {onEdit && (
                                         <button
                                             onClick={() => onEdit(row)}
-                                            className="font-sans text-xs text-brand-gold hover:text-white border border-brand-gold/30 hover:border-white/30 px-3 py-1.5 transition-colors"
+                                            className="font-sans text-xs text-brand-gold hover:text-white border border-brand-gold/30 hover:border-white/30 px-3 py-1.5 transition-colors cursor-pointer"
                                         >
                                             Edit
                                         </button>
@@ -82,7 +82,7 @@ export default function DataTable<T extends { id: number }>({
                                     {onDelete && (
                                         <button
                                             onClick={() => onDelete(row)}
-                                            className="font-sans text-xs text-red-400 hover:text-red-300 border border-red-400/30 hover:border-red-300/30 px-3 py-1.5 transition-colors"
+                                            className="font-sans text-xs text-red-400 hover:text-red-300 border border-red-400/30 hover:border-red-300/30 px-3 py-1.5 transition-colors cursor-pointer"
                                         >
                                             Delete
                                         </button>

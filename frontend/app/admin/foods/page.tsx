@@ -17,7 +17,7 @@ const columns: Column<Food>[] = [
     { header: "ID", accessor: "id", width: "3rem" },
     {
         header: "Image",
-        width: "5rem",
+        width: "3rem",
         render: (food) =>
             food.imageUrl ? (
                 <img src={food.imageUrl} alt={food.name} className="w-12 h-12 object-cover" />
@@ -27,7 +27,7 @@ const columns: Column<Food>[] = [
                 </div>
             ),
     },
-    { header: "Name", accessor: "name" },
+    { header: "Name", accessor: "name", width: "10rem"},
     {
         header: "Price",
         width: "6rem",
@@ -35,7 +35,7 @@ const columns: Column<Food>[] = [
     },
     {
         header: "Category",
-        width: "9rem",
+        width: "6rem",
         render: (food) => <span className="text-white/50">{food.categoryName}</span>,
     },
 ];

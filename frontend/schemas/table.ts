@@ -13,7 +13,11 @@ export const tableSchema = z.object({
         .trim()
         .min(1, "This field is required"),
     isReservable : z
-        .boolean()
+        .boolean(),
+    imageUrl : z
+        .string()
+        .transform(val => val.trim() || null)
+        .optional(),
 })
 
 export type TableFormInput = z.input<typeof tableSchema>;

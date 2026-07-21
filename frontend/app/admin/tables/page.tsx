@@ -7,6 +7,7 @@ import { createTable, deleteTable, getTables, updateTable } from "@/lib/table";
 import { TableFormInput, TableFormOutput, tableSchema } from "@/schemas/table";
 import { Table } from "@/types/table";
 import { zodResolver } from "@hookform/resolvers/zod";
+import axios from "axios";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
@@ -33,16 +34,19 @@ export default function TablesPage() {
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingTable, setEditingTable] = useState<Table | null>(null);
+    const [uploading, setUploading] = useState(false);
+    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const [confirmOpen, setConfirmOpen] = useState(false);
     const [pendingDelete, setPendingDelete] = useState<Table | null>(null);
 
-    const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm<TableFormInput, any, TableFormOutput>({
+    const { register, handleSubmit, reset, setValue, formState: { errors, isSubmitting } } = useForm<TableFormInput, any, TableFormOutput>({
         resolver: zodResolver(tableSchema),
         defaultValues: {
             tableNo: "",
             capacity: 1,
             position: "",
             isReservable: false,
+            imageUrl: ""
         }
     });
 
@@ -57,18 +61,21 @@ export default function TablesPage() {
     }, []);
 
     const handleAdd = () => {
+        setPreviewUrl(null);
         setEditingTable(null);
-        reset({ tableNo: "", capacity: 1, position: "", isReservable: false });
+        reset({ tableNo: "", capacity: 1, position: "", isReservable: false, imageUrl: ""});
         setIsModalOpen(true);
     };
 
     const handleEdit = (table: Table) => {
+        setPreviewUrl(table.imageUrl ?? null);
         setEditingTable(table);
         reset({
             tableNo: table.tableNo,
             capacity: table.capacity,
             position: table.position,
             isReservable: table.isReservable,
+            imageUrl: table.imageUrl ?? "",
         });
         setIsModalOpen(true);
     };
@@ -95,6 +102,22 @@ export default function TablesPage() {
         await fetchTables();
         setIsModalOpen(false);
         reset();
+    };
+
+    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        setUploading(true);
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("upload_preset", process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET!);
+        const res = await axios.post(
+            `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
+            formData
+        );
+        setValue("imageUrl", res.data.secure_url);
+        setPreviewUrl(res.data.secure_url);
+        setUploading(false);
     };
 
     return (
@@ -181,6 +204,21 @@ export default function TablesPage() {
                         <label htmlFor="isReservable" className="font-sans text-xs tracking-widest uppercase text-white/50 cursor-pointer">
                             Reservable Online
                         </label>
+                    </div>
+                    <div>
+                        <label className="block font-sans text-xs tracking-widest uppercase text-white/50 mb-2">
+                            Image <span className="text-white/20 normal-case tracking-normal">(optional)</span>
+                        </label>
+                        {previewUrl && (
+                            <img src={previewUrl} alt="preview" className="w-full h-40 object-cover mb-3" />
+                        )}
+                        <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleImageUpload}
+                            className="w-full text-sm text-white/40 file:mr-4 file:py-2 file:px-4 file:border-0 file:bg-white/10 file:text-white/60 file:text-xs file:cursor-pointer hover:file:bg-white/20 transition-colors"
+                        />
+                        {uploading && <p className="mt-1.5 text-xs text-brand-gold">Uploading...</p>}
                     </div>
 
                     <div className="flex gap-3 justify-end pt-2">

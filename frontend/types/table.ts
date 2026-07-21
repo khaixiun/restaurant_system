@@ -4,5 +4,6 @@ export interface Table {
     capacity: number;
     position: string;
     isReservable: boolean;
+    imageUrl: string | null;
     createdAt: string;
 }

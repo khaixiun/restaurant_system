@@ -1,5 +1,6 @@
 using FoodPro.API.Data;
 using FoodPro.API.DTOs.Reservation;
+using FoodPro.API.DTOs.Table;
 using FoodPro.API.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -141,6 +142,34 @@ namespace FoodPro.API.Controllers
             await context.SaveChangesAsync();
 
             return Ok(new {id = reservation.Id, message = "Reservation deleted successfully"});
+        }
+
+        [AllowAnonymous]
+        [HttpGet("availability")]
+        public async Task<ActionResult<IEnumerable<TableAvailabilityResponse>>> GetAvailability(
+            [FromQuery] DateOnly date,
+            [FromQuery] int timeSlotId)
+        {
+            var bookedTableIds = await context.Reservations
+                .Where(r => r.Date == date
+                        && r.TimeSlotId == timeSlotId
+                        && r.Status != ResStatus.Cancelled)
+                .Select(r => r.TableId)
+                .ToListAsync();
+
+            var tables = await context.Tables
+                .Where(t => t.IsReservable)
+                .Select(t => new TableAvailabilityResponse(
+                    t.Id,
+                    t.TableNo,
+                    t.Capacity,
+                    t.Position.ToString(),
+                    t.ImageUrl,
+                    !bookedTableIds.Contains(t.Id)
+                ))
+                .ToListAsync();
+            
+            return Ok(tables);
         }
     }
 }

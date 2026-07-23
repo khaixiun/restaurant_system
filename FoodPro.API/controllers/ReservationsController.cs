@@ -42,6 +42,8 @@ namespace FoodPro.API.Controllers
         {
             var table = await context.Tables.FindAsync(request.TableId);
             var timeslot = await context.TimeSlots.FindAsync(request.TimeSlotId);
+            var today = DateOnly.FromDateTime(DateTime.Today);
+            var now = TimeOnly.FromDateTime(DateTime.Now);
 
             if(table is null) 
                 return NotFound(new {message = "Table not found"});
@@ -55,8 +57,11 @@ namespace FoodPro.API.Controllers
                             && r.TimeSlotId == request.TimeSlotId
                             && r.Status != ResStatus.Cancelled);
 
-            if (request.Date < DateOnly.FromDateTime(DateTime.Today))
+            if (request.Date < today)
                 return BadRequest(new {message = "Reservation date cannot be in the past"});
+
+            if (request.Date == today && timeslot.StartTime < now)
+                return BadRequest(new {message = "Cannot book a time slot that has already passed today"});
 
             if (isBooked)
                 return Conflict(new {message = "This table is already reserved for that time slot"});

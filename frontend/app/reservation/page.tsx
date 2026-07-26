@@ -22,7 +22,7 @@ export default function ReservationPage() {
     const [success, setSuccess] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const today = new Date().toLocaleDateString("en-CA");
+    const today = new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Kuala_Lumpur" });
 
     useEffect(() => {
         getTimeSlots().then(setTimeSlots);

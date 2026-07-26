@@ -37,6 +37,7 @@ namespace FoodPro.API.Controllers
             return Ok(reservations);
         }
 
+        [AllowAnonymous]
         [HttpPost]
         public async Task<ActionResult<ReservationResponse>> CreateReservation (CreateReservationRequest request)
         {

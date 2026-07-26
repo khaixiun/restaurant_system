@@ -1,5 +1,6 @@
 using FoodPro.API.Data;
 using FoodPro.API.DTOs.Reservation;
+using FoodPro.API.DTOs.Table;
 using FoodPro.API.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -41,6 +42,8 @@ namespace FoodPro.API.Controllers
         {
             var table = await context.Tables.FindAsync(request.TableId);
             var timeslot = await context.TimeSlots.FindAsync(request.TimeSlotId);
+            var today = DateOnly.FromDateTime(DateTime.Today);
+            var now = TimeOnly.FromDateTime(DateTime.Now);
 
             if(table is null) 
                 return NotFound(new {message = "Table not found"});
@@ -54,8 +57,11 @@ namespace FoodPro.API.Controllers
                             && r.TimeSlotId == request.TimeSlotId
                             && r.Status != ResStatus.Cancelled);
 
-            if (request.Date < DateOnly.FromDateTime(DateTime.Today))
+            if (request.Date < today)
                 return BadRequest(new {message = "Reservation date cannot be in the past"});
+
+            if (request.Date == today && timeslot.StartTime < now)
+                return BadRequest(new {message = "Cannot book a time slot that has already passed today"});
 
             if (isBooked)
                 return Conflict(new {message = "This table is already reserved for that time slot"});
@@ -141,6 +147,34 @@ namespace FoodPro.API.Controllers
             await context.SaveChangesAsync();
 
             return Ok(new {id = reservation.Id, message = "Reservation deleted successfully"});
+        }
+
+        [AllowAnonymous]
+        [HttpGet("availability")]
+        public async Task<ActionResult<IEnumerable<TableAvailabilityResponse>>> GetAvailability(
+            [FromQuery] DateOnly date,
+            [FromQuery] int timeSlotId)
+        {
+            var bookedTableIds = await context.Reservations
+                .Where(r => r.Date == date
+                        && r.TimeSlotId == timeSlotId
+                        && r.Status != ResStatus.Cancelled)
+                .Select(r => r.TableId)
+                .ToListAsync();
+
+            var tables = await context.Tables
+                .Where(t => t.IsReservable)
+                .Select(t => new TableAvailabilityResponse(
+                    t.Id,
+                    t.TableNo,
+                    t.Capacity,
+                    t.Position.ToString(),
+                    t.ImageUrl,
+                    !bookedTableIds.Contains(t.Id)
+                ))
+                .ToListAsync();
+            
+            return Ok(tables);
         }
     }
 }

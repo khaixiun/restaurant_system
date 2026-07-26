@@ -6,6 +6,7 @@ namespace FoodPro.API.DTOs.Table
         int Capacity,
         string Position,
         bool IsReservable,
+        string? ImageUrl,
         DateTime CreatedAt
     );
 }

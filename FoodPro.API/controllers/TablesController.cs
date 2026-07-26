@@ -18,19 +18,26 @@ namespace FoodPro.API.Controllers
         public async Task<ActionResult<IEnumerable<TableResponse>>> GetTables()
         {
             return await context.Tables
-                .Select(t => new TableResponse(t.Id, t.TableNo, t.Capacity, t.Position.ToString(), t.IsReservable, t.CreatedAt))
+                .Select(t => new TableResponse(t.Id, t.TableNo, t.Capacity, t.Position.ToString(), t.IsReservable, t.ImageUrl, t.CreatedAt))
                 .ToListAsync();
         }
 
         [HttpPost]
         public async Task<ActionResult<TableResponse>> CreatetTable(CreateTableRequest request)
         {
-            var table = new Table{TableNo = request.TableNo, Capacity = request.Capacity, Position = Enum.Parse<TablePosition>(request.Position, true), IsReservable = request.IsReservable};
+            var table = new Table
+            {
+                TableNo = request.TableNo, 
+                Capacity = request.Capacity, 
+                Position = Enum.Parse<TablePosition>(request.Position, true), 
+                IsReservable = request.IsReservable,
+                ImageUrl = request.ImageUrl
+            };
 
             context.Tables.Add(table);
             await context.SaveChangesAsync();
 
-            var response = new TableResponse(table.Id, table.TableNo, table.Capacity, table.Position.ToString(), table.IsReservable, table.CreatedAt);
+            var response = new TableResponse(table.Id, table.TableNo, table.Capacity, table.Position.ToString(), table.IsReservable, table.ImageUrl, table.CreatedAt);
             return CreatedAtAction(nameof(GetTables), response);
         }
 
@@ -44,15 +51,31 @@ namespace FoodPro.API.Controllers
                 return NotFound(new {message = "Table not found"});
             }
 
-            if(table.TableNo == request.TableNo && table.Capacity == request.Capacity && table.Position.ToString() == request.Position.ToString() && table.IsReservable == request.IsReservable)
+            if (!Enum.TryParse<TablePosition>(request.Position, true, out var newPosition))
             {
-                return BadRequest(new {message = "New Update table is same with old table"});
+                return BadRequest(new
+                {
+                    message = "Invalid table position."
+                });
+            }
+
+            if (table.TableNo == request.TableNo &&
+                table.Capacity == request.Capacity &&
+                table.Position == newPosition &&
+                table.IsReservable == request.IsReservable &&
+                table.ImageUrl == request.ImageUrl)
+            {
+                return BadRequest(new
+                {
+                    message = "New update table is same with old table"
+                });
             }
 
             table.TableNo = request.TableNo;
             table.Capacity = request.Capacity;
-            table.Position = Enum.Parse<TablePosition>(request.Position, true);
+            table.Position = newPosition;
             table.IsReservable = request.IsReservable;
+            table.ImageUrl = request.ImageUrl;
 
             await context.SaveChangesAsync();
 

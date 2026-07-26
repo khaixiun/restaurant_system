@@ -1,9 +1,8 @@
-export interface Table {
-    id: number;
+export interface TableAvailability {
+    tableId: number;
     tableNo: string;
     capacity: number;
     position: string;
-    isReservable: boolean;
     imageUrl: string | null;
-    createdAt: string;
+    isAvailable: boolean;
 }

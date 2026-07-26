@@ -13,6 +13,8 @@ namespace FoodPro.API.DTOs.Table
         string Position,
 
         [Required]
-        bool IsReservable
+        bool IsReservable,
+
+        string? ImageUrl
     );
 }

@@ -35,11 +35,9 @@ export default function Navbar() {
                         MENU
                     </Link>
 
-                    {/* {user && (
-                        <Link href="/reservations" className="text-sm tracking-widest text-gray-300 hover:text-white transition-colors">
-                        RESERVATIONS
-                        </Link>
-                    )} */}
+                    <Link href="/reservation" className="text-sm tracking-widest text-gray-300 hover:text-white transition-colors">
+                    RESERVATIONS
+                    </Link>
 
                     <Link href="/about" className="text-sm tracking-widest text-gray-300 hover:text-white transition-colors">
                         READ ME

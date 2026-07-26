@@ -121,9 +121,6 @@ namespace FoodPro.API.Controllers
                         && r.TimeSlotId == request.TimeSlotId
                         && r.Status != ResStatus.Cancelled);
 
-            if (request.Date < DateOnly.FromDateTime(DateTime.Today))
-                return BadRequest(new {message = "Reservation date cannot be in the past"});
-
             if (isBooked)
                 return Conflict(new {message = "This table is already reserved for that time slot"});
 

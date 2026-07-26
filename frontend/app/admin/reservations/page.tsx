@@ -193,7 +193,6 @@ export default function ReservationsPage() {
                             <input
                                 {...updateRegister("date")}
                                 type="date"
-                                min={new Date().toISOString().split("T")[0]}
                                 className="w-full bg-transparent border border-white/10 px-4 py-3 text-sm text-white outline-none focus:border-brand-gold transition-colors"
                             />
                             {updateErrors.date && <p className="mt-1.5 text-xs text-red-400">{updateErrors.date.message}</p>}

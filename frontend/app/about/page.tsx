@@ -1,64 +1,82 @@
 export default function ProjectReadmePage() {
+  const completed = [
+    { title: "Authentication", desc: "JWT-based login with role-based authorization (admin / guest)" },
+    { title: "Menu Management", desc: "Category and food CRUD with Cloudinary image upload" },
+    { title: "Reservation System", desc: "Public table selection, availability checking, and double-booking prevention via composite unique index" },
+    { title: "AI Chatbot", desc: "Floating chat widget powered by Gemini API — answers menu, table, and availability questions in natural language" },
+    { title: "CI/CD Pipeline", desc: "GitHub Actions with automatic deploy to Render (backend) and Vercel (frontend)" },
+  ];
+
+  const roadmap = [
+    { title: "Ordering System", desc: "Allow customers to place food orders directly from the menu" },
+    { title: "Payment Gateway", desc: "Integrate a local payment provider (ToyyibPay or Billplz) for order checkout" },
+    { title: "Admin Dashboard", desc: "Sales analytics, most ordered items, revenue charts filterable by date range" },
+  ];
+
   return (
     <main className="bg-brand-dark min-h-screen">
-      <div className="max-w-6xl mx-auto px-6 md:px-12">
+      <div className="max-w-3xl mx-auto px-6 md:px-12 py-32">
 
-        <div className="pt-32 pb-16 border-b border-white/10">
-          <p className="font-sans text-brand-gold text-xs tracking-[0.2em] uppercase mb-4">
-            Portfolio Showcase
-          </p>
-          <h1 className="font-serif text-white text-5xl md:text-6xl">
-            Project Readme
-          </h1>
-        </div>
+        <p className="font-sans text-brand-gold text-xs tracking-[0.2em] uppercase mb-4">
+          Portfolio Project
+        </p>
+        <h1 className="font-serif text-white text-5xl md:text-6xl mb-6">
+          FoodPro
+        </h1>
+        <p className="font-sans text-white/60 text-sm leading-relaxed max-w-xl">
+          A full-stack restaurant management system built with .NET 10, Next.js 15, and PostgreSQL. Deployed via Docker on Render and Vercel.
+        </p>
 
-        <div className="my-12 bg-white/5 border border-brand-gold/30 rounded-lg p-6 md:p-8">
+        <div className="mt-12 bg-white/5 border border-brand-gold/30 rounded-lg p-6">
           <p className="font-sans text-brand-gold text-xs tracking-[0.2em] uppercase mb-4">
             Demo Access
           </p>
-          <h2 className="font-serif text-white text-2xl mb-4">
-            Test the Admin Dashboard & CRUD Operations
-          </h2>
-          <p className="font-sans text-white/70 text-sm mb-6 max-w-2xl leading-relaxed">
-            To view the full operational flow, manage menu categories, and process incoming food orders, access the secure back-office dashboard using the credentials below:
-          </p>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
-            <div className="bg-white/5 px-4 py-3 rounded border border-white/10">
-              <span className="block text-xs text-white/40 font-sans uppercase">Admin Route</span>
-              <a 
-                href="/login" 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="text-brand-gold text-sm underline hover:text-white transition-colors"
-              >
-                /login (Opens in new tab)
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <span className="block text-xs text-white/40 font-sans uppercase mb-1">Route</span>
+              <a href="/login" target="_blank" rel="noopener noreferrer" className="text-brand-gold text-sm underline hover:text-white transition-colors">
+                /login
               </a>
             </div>
-            <div className="bg-white/5 px-4 py-3 rounded border border-white/10">
-              <span className="block text-xs text-white/40 font-sans uppercase">Email Address</span>
-              <span className="text-white text-sm font-mono selection:bg-brand-gold/30">admin@gmail.com</span>
+            <div>
+              <span className="block text-xs text-white/40 font-sans uppercase mb-1">Email</span>
+              <span className="text-white text-sm font-mono">admin@gmail.com</span>
             </div>
-            <div className="bg-white/5 px-4 py-3 rounded border border-white/10">
-              <span className="block text-xs text-white/40 font-sans uppercase">Password</span>
-              <span className="text-white text-sm font-mono selection:bg-brand-gold/30">12345678</span>
+            <div>
+              <span className="block text-xs text-white/40 font-sans uppercase mb-1">Password</span>
+              <span className="text-white text-sm font-mono">12345678</span>
             </div>
           </div>
         </div>
 
-        <div className="py-12 border-t border-white/10">
-          <p className="font-sans text-brand-gold text-xs tracking-[0.2em] uppercase mb-4">
-            Project Status & Development Roadmap
+        {/* Completed */}
+        <div className="mt-12">
+          <p className="font-sans text-brand-gold text-xs tracking-[0.2em] uppercase mb-6">
+            Completed
           </p>
-          <h2 className="font-serif text-white text-2xl mb-4">
-            What's Next
-          </h2>
-          <p className="font-sans text-white/70 text-sm max-w-2xl leading-relaxed">
-            This project is under active development. I will continue to update, optimize, and build out features to polish the overall architecture. 
+          <div className="flex flex-col gap-4">
+            {completed.map((item) => (
+              <div key={item.title} className="border-l-2 border-brand-gold/40 pl-4">
+                <p className="font-sans text-white text-sm font-medium mb-1">{item.title}</p>
+                <p className="font-sans text-white/50 text-sm">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Roadmap */}
+        <div className="mt-12">
+          <p className="font-sans text-brand-gold text-xs tracking-[0.2em] uppercase mb-6">
+            Roadmap
           </p>
-          <p className="font-sans text-white/70 text-sm max-w-2xl leading-relaxed mt-4">
-            The next major milestone is implementing the **Reservation Module**. Building a robust, conflict-free booking system takes some time to properly map out and execute, and it will be integrated into the architecture shortly.
-          </p>
+          <div className="flex flex-col gap-4">
+            {roadmap.map((item) => (
+              <div key={item.title} className="border-l-2 border-white/15 pl-4">
+                <p className="font-sans text-white/60 text-sm font-medium mb-1">{item.title}</p>
+                <p className="font-sans text-white/35 text-sm">{item.desc}</p>
+              </div>
+            ))}
+          </div>
         </div>
 
       </div>

@@ -3,7 +3,7 @@
 A full-stack restaurant management system featuring a high-class, minimalist public food menu, reservation system, AI-powered chat assistant, and a complete administrative control panel.
 
 🔗 **Live Demo:** https://restaurant-system-git-main-khai-dev1.vercel.app
-🎬 **Demo Video:** [Watch on YouTube](#)
+🎬 **Demo Video:** <img width="800" height="450" alt="ezgif com-video-to-gif-converter" src="https://github.com/user-attachments/assets/0fe73c28-0cb8-4eb5-9749-919479e7c94b" />
 
 > ⚠️ Backend is hosted on Render's free tier — the first request may take 30–60 seconds to wake up.
 

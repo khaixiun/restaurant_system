@@ -3,6 +3,7 @@ import { Playfair_Display, Geist } from "next/font/google";
 import "@/app/globals.css";
 import Navbar from "@/components/Navbar";
 import { AuthProvider } from "@/context/AuthContext";
+import ChatWidget from "@/components/ChatWidget";
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -30,6 +31,7 @@ export default function RootLayout({
         <AuthProvider>
           <Navbar />
           <main className="pt-24">
+            <ChatWidget />
             {children}
           </main>
         </AuthProvider>

@@ -68,6 +68,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 builder.Services.AddScoped<TokenService>();
+builder.Services.AddHttpClient<ChatService>();
 
 builder.WebHost.ConfigureKestrel(options =>
 {

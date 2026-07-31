@@ -31,7 +31,7 @@ export default function Navbar() {
                 </Link>
 
                 <div className="flex items-center gap-8">
-                    <Link href="/menu" className="text-sm tracking-widest text-brand-gold hover:text-white transition-colors">
+                    <Link href="/menu" className="text-sm tracking-widest text-gray-300 hover:text-white transition-colors">
                         MENU
                     </Link>
 
@@ -45,6 +45,14 @@ export default function Navbar() {
 
                     {user ? (
                         <div className="flex items-center gap-6">
+                            {user.role === "Admin" && (
+                                <Link
+                                    href="/admin/foods"
+                                    className="text-sm tracking-widest text-gray-300 hover:text-white transition-colors"
+                                >
+                                    ADMIN
+                                </Link>
+                            )}
                             <span className="text-sm text-white/50 font-sans">
                                 {user.name}
                             </span>

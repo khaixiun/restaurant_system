@@ -24,15 +24,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     useEffect(() => {
         try {
-        const userCookie = Cookies.get("user");
+            const userCookie = Cookies.get("user");
         if (userCookie) {
             const decoded = decodeURIComponent(userCookie);
             setUser(JSON.parse(decoded));
         }
         } catch {
-        Cookies.remove("user");
+            Cookies.remove("user");
         } finally {
-        setLoading(false);
+            setLoading(false);
         }
     }, []);
 

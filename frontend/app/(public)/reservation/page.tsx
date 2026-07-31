@@ -120,7 +120,7 @@ export default function ReservationPage() {
                                     setTimeSlotId(0);
                                     setSuccess(false);
                                 }}
-                                className="w-full bg-transparent border border-white/10 px-4 py-3 text-sm text-white outline-none focus:border-brand-gold transition-colors"
+                                className="w-full bg-transparent border border-white/10 px-4 py-3 text-sm text-white outline-none focus:border-brand-gold transition-colors scheme-dark"
                             />
                         </div>
                         <div>

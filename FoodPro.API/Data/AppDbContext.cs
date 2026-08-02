@@ -1,21 +1,21 @@
 using FoodPro.API.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
+using Table = FoodPro.API.Models.Table;
 
 namespace FoodPro.API.Data
 {
-    public class AppDbContext : DbContext
+    public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
     {
-        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
-        {
-        }
-
         public DbSet<Category> Categories { get; set; }
         public DbSet<Food> Foods { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Table> Tables { get; set; }
         public DbSet<TimeSlot> TimeSlots { get; set; }
         public DbSet<Reservation> Reservations { get; set; }
-
+        public DbSet<Order> Orders { get; set; }
+        public DbSet<OrderItem> OrderItems { get; set; }
+        public DbSet<Payment> Payments { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -40,48 +40,54 @@ namespace FoodPro.API.Data
                 .HasForeignKey(r => r.TimeSlotId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            modelBuilder.Entity<OrderItem>()
+                .HasOne(oi => oi.Order)
+                .WithMany(o => o.OrderItems)
+                .HasForeignKey(oi => oi.OrderId)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<Order>()
+                .HasOne(o => o.Payment)
+                .WithOne(p => p.Order)
+                .HasForeignKey<Payment>(o => o.OrderId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             //Unique constraint 
             modelBuilder.Entity<Reservation>()
                 .HasIndex(r => new { r.TableId, r.Date, r.TimeSlotId })
                 .IsUnique()
                 .HasFilter("deleted_at IS NULL");
 
-            //Enum conversion
-            modelBuilder.Entity<User>()
-                .Property(u => u.Role)
-                .HasConversion<string>();
-
-            modelBuilder.Entity<Reservation>()
-                .Property(r => r.Status)
-                .HasConversion<string>();
-
-            modelBuilder.Entity<Table>()
-                .Property(t => t.Position)
-                .HasConversion<string>();
-
-            modelBuilder.Entity<Category>().HasQueryFilter(c => c.DeletedAt == null);
-            modelBuilder.Entity<Food>().HasQueryFilter(f => f.DeletedAt == null);
-            modelBuilder.Entity<User>().HasQueryFilter(u => u.DeletedAt == null);
-            modelBuilder.Entity<Table>().HasQueryFilter(t => t.DeletedAt == null);
-            modelBuilder.Entity<TimeSlot>().HasQueryFilter(ts => ts.DeletedAt == null);
-            modelBuilder.Entity<Reservation>().HasQueryFilter(r => r.DeletedAt == null);
-
-            foreach (var entity in modelBuilder.Model.GetEntityTypes())
+            foreach (var entityType in modelBuilder.Model.GetEntityTypes())
             {
-                var tableName = entity.GetTableName();
-                if (tableName != null)
+                // Enum conversion
+                foreach (var property in entityType.GetProperties())
                 {
-                    entity.SetTableName(ConvertToSnakeCase(tableName));
+                    if (property.ClrType.IsEnum)
+                        property.SetProviderClrType(typeof(string));
                 }
 
-                foreach (var property in entity.GetProperties())
+                // Soft delete filter
+                if (typeof(BaseEntity).IsAssignableFrom(entityType.ClrType))
                 {
-                    property.SetColumnName(ConvertToSnakeCase(property.Name));
+                    var parameter = Expression.Parameter(entityType.ClrType, "e");
+                    var prop = Expression.Property(parameter, nameof(BaseEntity.DeletedAt));
+                    var condition = Expression.Equal(prop, Expression.Constant(null));
+                    var lambda = Expression.Lambda(condition, parameter);
+                    modelBuilder.Entity(entityType.ClrType).HasQueryFilter(lambda);
                 }
+
+                // Snake case naming
+                var tableName = entityType.GetTableName();
+                if (tableName != null)
+                    entityType.SetTableName(ConvertToSnakeCase(tableName));
+
+                foreach (var property in entityType.GetProperties())
+                    property.SetColumnName(ConvertToSnakeCase(property.Name));
             }
         }
 
-        private string ConvertToSnakeCase(string input)
+        private static string ConvertToSnakeCase(string input)
         {
             if (string.IsNullOrEmpty(input)) return input;
 

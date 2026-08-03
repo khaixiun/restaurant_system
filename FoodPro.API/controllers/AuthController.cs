@@ -2,11 +2,13 @@ using FoodPro.API.Data;
 using FoodPro.API.DTOs.Auth;
 using FoodPro.API.Models;
 using FoodPro.API.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace FoodPro.API.Controllers
 {
+    [Authorize(Roles = "Admin")]
     [ApiController]
     [Route("api/[controller]")]
     public class AuthController(AppDbContext context, TokenService tokenService) : ControllerBase
@@ -31,6 +33,7 @@ namespace FoodPro.API.Controllers
             return Ok(new { message = "Registration successful" });
         }
 
+        [AllowAnonymous]
         [HttpPost("login")]
         public async Task<ActionResult<AuthResponse>> Login(LoginRequest request)
         {

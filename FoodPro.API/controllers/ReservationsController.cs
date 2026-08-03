@@ -13,7 +13,6 @@ namespace FoodPro.API.Controllers
     [Route("/api/[controller]")]
     public class ReservationController(AppDbContext context) : ControllerBase
     {
-        [AllowAnonymous]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ReservationResponse>>> GetReservations()
         {
